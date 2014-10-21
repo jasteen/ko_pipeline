@@ -15,11 +15,12 @@ Step 5 - from the folder containing your .faa files, run this pipeline.
 
 Step 6 - you probably want to turn the output files into something useful.  I normally do:
 
-	for i in *.tab; do awk '{print $1"\t"red}' $i > $i.coloured.tab; done
+	for i in *.tab; do awk '{print $1"\tred"}' $i > $i.coloured.tab; done
 	perl /installed/location/pipeline_perl_scripts/percentage_containing_K.pl summary_table.txt percentage_coverage.tab
 	perl /installed/location/pipeline_perl_scripts/presence_absence_across_community.pl summary_table.txt presence_absence.tab
 
 Step 7 - Visualise files on KEGG
+
 Step 8 - Profit
 
 
