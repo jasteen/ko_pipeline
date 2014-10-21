@@ -1,0 +1,54 @@
+// Variables //
+
+//Change this location to suit where you download this file to from GITHUB
+INSTALLED_LOCATION="/srv/whitlam/home/users/uqjstee5/GITHUB/ko_pipeline"
+
+//This #threads is for EACH incarnation of blast.  So if you have 10 .faa files, you will spawn 40 cpu's worth of processes.
+NUM_THREADS=4
+
+
+
+// Non-Changing Variables //
+/this information is correct for ACE servers
+DATABASE_BASE="/srv/whitlam/bio/db/ko_pipeline"
+KEGG_BLAST_DATABASE="${DATABASE_BASE}/cdhit_0.7_clustered/cd_hit_70.faa"
+LOOKUP_TABLE="${DATABASE_BASE}/k_lookup/K_gene_lookup.txt"
+
+
+// set up each section //
+
+blastp = {
+    transform("faa") to ("blastp.out"){    
+        exec """ 
+  	    . /etc/profile.d/modules.sh;
+	    module load blast;
+	    blastp -query $input -db ${KEGG_BLAST_DATABASE} -outfmt 6 -out $output -evalue 1e-6 -max_target_seqs 1 -num_threads ${NUM_THREADS}
+        """
+    }
+}
+
+lookup = {
+    transform("blastp.out") to ("lookup_table.txt"){
+        exec """
+	    perl ${INSTALLED_LOCATION}/pipeline_perl_scripts/grep_script.pl ${LOOKUP_TABLE} $input $output
+        """
+    }
+}
+
+
+summarise = {
+    produce("summary_table.tsv"){
+	from("*.lookup_table.txt"){        
+            exec """
+	        perl ${INSTALLED_LOCATION}/pipeline_perl_scripts/createKCountTable.pl $inputs $output
+            """
+        }
+    }
+}
+
+
+//Actual pipeline
+Bpipe.run { 
+	"%.faa" * [ blastp + lookup ] + summarise 
+}
+
