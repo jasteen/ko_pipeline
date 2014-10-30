@@ -9,7 +9,8 @@ NUM_THREADS=4
 
 
 // Non-Changing Variables //
-/this information is correct for ACE servers
+//this information is correct for ACE servers
+
 DATABASE_BASE="/srv/whitlam/bio/db/ko_pipeline"
 KEGG_BLAST_DATABASE="${DATABASE_BASE}/cdhit_0.7_clustered/cd_hit_70.faa"
 LOOKUP_TABLE="${DATABASE_BASE}/k_lookup/K_gene_lookup.txt"
